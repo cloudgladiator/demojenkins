@@ -1,0 +1,48 @@
+pipeline{
+    agent any
+    tools {
+        maven 'Maven' 
+    }
+    stages{
+        stage("Test"){
+            steps{
+                 // mvn test
+                 sh "mvn --version"
+                
+            }
+
+        }
+        stage("Build"){
+            steps{
+                //mvn package
+                
+            }
+        }
+        stage("Deploy on Test"){
+            steps{
+                // deploy on container -> plugin
+                deploy adapters: [tomcat9(credentialsId: 'tomcatserverdetails1', path: '', url: 'http://3.139.72.20:8080/manager/html')], contextPath: '/app', war: '**/*.war'
+               
+            }
+        }
+            stage("Deploy on Prod"){
+            steps{
+                // deploy on container -> plugin
+                deploy adapters: [tomcat9(credentialsId: 'tomcatserverdetails1', path: '', url: 'http://3.133.111.132:8080/manager/html')], contextPath: '/app', war: '**/*.war'
+               
+            }
+            
+        }
+    }
+    post{
+        always{
+            echo "========always========"
+        }
+        success{
+            echo "========pipeline executed successfully ========"
+        }
+        failure{
+            echo "========pipeline execution failed========"
+        }
+    }
+}
